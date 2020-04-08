@@ -1,0 +1,217 @@
+<html>
+<head>
+
+<title>Adventure in Mr. Schaub's House</title>
+
+<style>
+  body { font-family: sans-serif }
+  h3 { background-color: blue; color: white }
+</style>
+
+<script>
+var world = {
+  'diningroom': 
+    { image: 'diningroom.jpg',
+      desc: "in a cheerful dining room",
+      items: [ 'keys', 'a small child' ],
+      exits: { 'w': 'kitchen', 'e': 'livingroom', 's': 'mbedroom' }
+    },
+  'kitchen':
+    { image: 'kitchen.jpg',
+      desc: "in a warm, inviting kitchen",
+      items: [ 'bread', 'microwave', 'refrigerator' ],
+      exits: { 'e': 'diningroom' }
+    },
+  'livingroom':
+    { image: 'livingroom.jpg',
+      desc: 'in a comfortable living room',
+      items: [ 'a book of Bach preludes' ],
+      exits: { 'w': 'diningroom', 's': 'hallway' }
+    },
+  'mbedroom':
+    { image: 'mbedroom.jpg',
+      desc: 'in the master bedroom',
+      items: [ 'alarm clock', 'crib' ],
+      exits: { 'e': 'hallway', 'n': 'diningroom' }
+    },
+  'hallway':
+    { image: 'hallway.jpg',
+      desc: 'in a small hallway',
+      items: [ ],
+      exits: { 'w': 'mbedroom', 'e': 'cbedroom', 'n': 'livingroom', 's': 'bathroom' }
+    },
+  'cbedroom':
+    { image: 'cbedroom.jpg',
+      desc: 'in another bedroom',
+      items: [ 'a teddy bear' ],
+      exits: { 'w': 'hallway' }
+    },
+  'bathroom':
+    { image: 'bathroom.jpg',
+      desc: 'in a small bathroom',
+      items: [ 'a gold key' ],
+      exits: { 'n': 'hallway' }
+    }
+}; 
+
+var room;  // a reference to the current room
+var itemsCarried = [ 'a green basket' ];  // list of items carried by the player
+
+var txtCommand; // a reference to the text input box
+
+function init() {
+ txtCommand = document.getElementById("txtCommand");
+
+ txtCommand.focus();
+ room = world['diningroom']
+ enterRoom();
+}
+
+function setMessage(msg) {
+  document.getElementById('lblMessage').innerHTML = msg;
+}
+
+function setImage(img) {
+  document.getElementById('imgSource').setAttribute('src', img);
+}
+
+function setItems(items) {
+  itemList = ``
+  for (item in items) {
+    itemList += `<a href="javascript:void take('${items[item]}');"> ${items[item]} </a> |`;
+  }
+  document.getElementById('itemsPresent').innerHTML = itemList;
+}
+
+function setItemsCarried() {
+  itemList = ``
+  for (item in itemsCarried) {
+    itemList += `<a href="javascript:void drop('${itemsCarried[item]}');"> ${itemsCarried[item]} </a> |`;
+  }
+  document.getElementById('itemsCarried').innerHTML = itemList;
+}
+
+function setExits(room) {
+  exitRooms = ``
+  directs = { 'n': 'NORTH', 's': 'SOUTH', 'e': 'EAST', 'w': 'WEST'}
+
+  for (exit in room.exits) {
+    exitRooms += `<a href="javascript:void gotoDir('${exit}');"> ${directs[exit]}</a> |`;
+  }
+  document.getElementById('exits').innerHTML = exitRooms;
+}
+
+function enterRoom() {
+  setMessage("You are " + room.desc);
+  setImage(room.image);
+  setItems(room.items);
+  setItemsCarried();
+  setExits(room);
+}
+
+function gotoDir(dir) {
+  if (typeof(room.exits[dir]) != "undefined") {
+    room = world[room.exits[dir]]
+    enterRoom();
+  } else {
+    setMessage("You can't go there!");
+  }
+}
+
+function take(obj) {
+  for (item in room.items) {
+    if (obj === room.items[item]) {
+      itemsCarried.push(obj);
+      index = room.items.indexOf(obj);
+      // room.items.slice(index, index + 1);
+      room.items.splice(index, 1);
+      setItems(room.items)
+      setItemsCarried();
+      return;
+    } 
+  }
+  return setMessage("You can't take that!");
+}
+
+function drop(obj) {
+  for (item in itemsCarried) {
+    if (obj === itemsCarried[item]) {
+      room.items.push(obj);
+      index = itemsCarried.indexOf(obj);
+      // itemsCarried.slice(index, index + 1);
+      itemsCarried.splice(index, 1);
+      setItems(room.items)
+      setItemsCarried();
+      return;
+    } 
+  }
+}
+  
+
+function btnExecute_clicked() {
+  var cmd = txtCommand.value;
+  if (cmd == "") {
+    setMessage("Please enter a command.");
+    return;
+  }
+  
+  cmd = cmd.toLowerCase();
+  
+  // parse the command into verb and object
+  var spaceLoc = cmd.indexOf(" ");
+  var verb, object = "";
+  if (spaceLoc > -1) {
+    verb = cmd.substring(0, spaceLoc);
+    object = cmd.substring(spaceLoc+1);
+  } else {
+    verb = cmd;
+  }
+  
+  if (verb == "n" || verb == "north" || verb == "s" || verb == "south" || 
+     verb == "e" || verb == "east" || verb == "w" || verb == "west") {
+    gotoDir(verb.charAt(0));
+  } else if (verb == "go") {
+    gotoDir(object.charAt(0));
+  } else if (verb == "get" || verb == "take") {
+    take(object);
+  } else if (verb == "drop" || verb == "put") {
+    drop(object);
+  } else if (verb == "help") {
+    setMessage("Enter 'north', 'east', etc. to move around. Enter 'get <i>item</i>' to pick up an item. Enter 'drop <i>item</i>' to drop an item.");
+  } else {
+    setMessage("Unknown command! Enter 'help' for assistance.");
+  }
+  txtCommand.value = "";
+  txtCommand.focus();
+
+  return false;
+}
+
+</script>
+</head>
+<body onload='init()'>
+
+  <table width='100%'>
+    <tr>
+    <td>
+      <img id= 'imgSource' src=""><br>
+      <b>Exits:</b> <b id="exits"></b>
+    </td>
+    <td valign='top'><h3>Items present</h3>
+      <p id='itemsPresent'>(Display items present here)</p>      
+    
+    <h3>Items carried</h3>
+        <p id="itemsCarried">(Display items carried by the user here)</p>
+    </td>
+    </tr>
+  </table>
+    
+    <form onSubmit="return btnExecute_clicked();">
+      Enter your command: <input type='text' id='txtCommand'>
+        <input type='button' value='Execute' onclick="btnExecute_clicked();">
+    </form>
+  
+  <p id="lblMessage"></p>
+
+</body>
+</html>

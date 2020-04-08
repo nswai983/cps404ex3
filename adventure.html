@@ -9,6 +9,7 @@
 </style>
 
 <script>
+  
 var world = {
   'diningroom': 
     { image: 'diningroom.jpg',
@@ -78,7 +79,7 @@ function setImage(img) {
 function setItems(items) {
   itemList = ``
   for (item in items) {
-    itemList += `<a href="javascript:void take('${items[item]}');"> ${items[item]} </a> |`;
+    itemList += `<div><a href="javascript:void take('${items[item]}');"> ${items[item]} </a><div>`;
   }
   document.getElementById('itemsPresent').innerHTML = itemList;
 }
@@ -86,7 +87,7 @@ function setItems(items) {
 function setItemsCarried() {
   itemList = ``
   for (item in itemsCarried) {
-    itemList += `<a href="javascript:void drop('${itemsCarried[item]}');"> ${itemsCarried[item]} </a> |`;
+    itemList += `<div><a href="javascript:void drop('${itemsCarried[item]}');"> ${itemsCarried[item]} </a></div>`;
   }
   document.getElementById('itemsCarried').innerHTML = itemList;
 }
@@ -215,3 +216,4 @@ function btnExecute_clicked() {
 
 </body>
 </html>
+

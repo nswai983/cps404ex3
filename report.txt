@@ -1,8 +1,15 @@
-Hours: 2.5
+Hours: 7.25
     - 2.5 on adventure.html
+    - 3.75 on adventureJQ.html
 
 splicing - https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array
 4.7.2020 (5 minutes)
 
 Array help - https://www.w3schools.com/jsref/jsref_operators.asp
 4.7.2020 (20 minutes)
+
+
+help from zac hayes (1 hour)
+4.8.2020
+fadein/fadeout clarification
+.click and span issues with directions
